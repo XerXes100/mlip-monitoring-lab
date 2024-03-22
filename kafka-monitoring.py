@@ -2,7 +2,7 @@ from kafka import KafkaConsumer
 from prometheus_client import Counter, Histogram, start_http_server
 
 # TODO: Update the Kafka topic to the movie log of your team
-# topic = 'movielogN'
+topic = 'movielog13'
 
 start_http_server(8765)
 
@@ -13,6 +13,8 @@ start_http_server(8765)
 #     'request_count', 'Recommendation Request Count',
 #     ['http_status']
 # )
+
+REQUEST_COUNT = Counter('request_count', 'Recommendation Request Count', ['http_status'])
 
 REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency')
 
@@ -36,6 +38,9 @@ def main():
             # print(values) - You can print values and see how to get the status
             # status = Eg. 200,400 etc
             # REQUEST_COUNT.?(status).inc()
+
+            status = values[3].strip().split(" ")[1]
+            REQUEST_COUNT.labels(status).inc()
 
             # Updating request latency histogram
             time_taken = float(values[-1].strip().split(" ")[0])
